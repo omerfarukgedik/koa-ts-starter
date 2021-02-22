@@ -2,10 +2,9 @@ import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import cors from "koa2-cors";
 import logger from "koa-logger";
-
+import healthCheck from "./routes/healthCheck";
+import { port } from "./config";
 const app = new Koa();
-
-const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser());
 app.use(
@@ -14,26 +13,11 @@ app.use(
     })
 );
 app.use(logger());
-
-
-import Router from "koa-router";
-const router = new Router();
-
-router.get('/', async (ctx) => {
-    try {
-        ctx.body = {
-            status: 'success'
-        }
-    } catch (e) {
-        console.error(e);
-    }
-});
-
-app.use(router.routes());
+app.use(healthCheck.routes());
 
 const server = app
-    .listen(PORT, async () => {
-        console.log(`Server listening on port: ${PORT}`);
+    .listen(port, async () => {
+        console.log(`Server listening on port: ${port}`);
     })
     .on("error", err => {
         console.error(err);
